@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    container_name: web_backend
+    volumes: 
+      - ./backend:/backend
+    
+    env_file: .env.development
+
+    ports:
+      - "8000:8000"
+
+    depends_on: 
+      - db
+
+  nginx:
+    image: nginx:1.15-alpine
+    container_name: nginx_backend
+    ports:
+      - 1337:80
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    
+    depends_on:
+      - web
+
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    ports:
+      - '5432:5432'
+    volumes: 
+      - ./db:/var/lib/postgresql/data
+
+    env_file: .env.development
+      
